@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="A browser-based CSV tool for preparing student and faculty allocations.">
+<title>Faculty Match — Allocation workspace</title><link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar" aria-label="Main navigation">
+    <a class="brand" href="#top" aria-label="Faculty Match home"><span class="brand-mark">FM</span><span>Faculty Match<span class="brand-period">.</span></span></a>
+    <div class="workspace-label">WORKSPACE</div><button class="department-switch"><span class="dept-icon">IS</span><span><b>Information Science</b><small>Department workspace</small></span><span class="chevron">⌄</span></button>
+    <nav class="nav-list"><a class="nav-item active" href="#workspace"><span class="nav-icon">▦</span> Allocation workspace</a><a class="nav-item muted" href="#imports"><span class="nav-icon">⇧</span> Data intake <span class="soon">NEXT</span></a><a class="nav-item muted" href="#audit"><span class="nav-icon">◷</span> Run history <span class="soon">NEXT</span></a></nav>
+    <div class="sidebar-bottom"><div class="privacy-card"><span class="lock-icon">⌑</span><div><b>Your data stays here</b><p>This prototype processes files in your browser. Nothing is uploaded.</p></div></div><div class="profile"><div class="avatar">AD</div><div><b>Department admin</b><small>Local prototype</small></div><span class="dots">•••</span></div></div>
+  </aside>
+  <main id="workspace" class="main-content">
+    <header class="topbar"><div class="breadcrumb">Workspaces <span>/</span> <b>Allocation</b></div><div class="top-meta"><span class="local-badge"><i></i> Local session</span><button class="theme-button" id="theme-toggle" type="button" aria-label="Switch to night mode" title="Switch to night mode">☾</button><button class="help-button" aria-label="About this prototype">?</button></div></header>
+    <section class="page-heading"><div><div class="eyebrow">STUDENT–FACULTY ALLOCATION</div><h1>Allocation workspace</h1><p>Upload your files, choose a fair distribution, and review every decision.</p></div><div class="step-track" aria-label="Workflow steps"><span class="step-current"><i>1</i> Set up</span><b></b><span><i>2</i> Review</span><b></b><span><i>3</i> Export</span></div></section>
+    <div class="prototype-banner"><span class="banner-icon">✦</span><div><b>Local CSV workflow</b><p>No sign-in. CSVs are processed in this browser; CV extraction and saved history are not included.</p></div></div>
+    <div class="dashboard-grid">
+      <section class="setup-column">
+        <article class="card import-card" id="imports"><div class="card-heading"><div class="number">01</div><div><h2>Add your files</h2><p>Import structured CSV files to get started.</p></div><span class="card-status" id="file-status">WAITING FOR FILES</span></div>
+          <div class="upload-grid">
+            <label class="upload-box" for="students-file"><input id="students-file" type="file" accept=".csv,text/csv"><span class="upload-symbol student-symbol">↥</span><span class="upload-text"><b>Student file</b><small>name · usn · cgpa · section</small><em id="student-file-name">Choose a CSV file</em></span><span class="upload-arrow">＋</span></label>
+            <label class="upload-box" for="faculty-file"><input id="faculty-file" type="file" accept=".csv,text/csv"><span class="upload-symbol faculty-symbol">↥</span><span class="upload-text"><b>Faculty file</b><small>name · id · subject</small><em id="faculty-file-name">Choose a CSV file</em></span><span class="upload-arrow">＋</span></label>
+          </div><div class="format-note"><span>ⓘ</span> Use UTF-8 CSV with a header row. <button type="button" id="download-template">Download templates</button></div><div class="error-message" id="input-error" role="alert" hidden></div>
+        </article>
+        <article class="card rules-card"><div class="card-heading"><div class="number">02</div><div><h2>Set allocation rules</h2><p>Choose how students are shortlisted and distributed.</p></div></div>
+          <div class="rule-section"><label class="field-label" for="exclude-mode">STUDENT EXCLUSION <span class="info" title="Students removed before allocation">i</span></label><select id="exclude-mode"><option value="department">Top N · Department-wide</option><option value="section">Top N · In each section</option><option value="percentage">Top percentage · Department-wide</option></select><div class="inline-control"><label for="exclude-amount" id="amount-label">Number of students</label><div class="input-suffix"><input id="exclude-amount" type="number" min="0" step="1" value="0"><span id="amount-suffix">students</span></div></div><div class="tie-control"><span>Ties at the cutoff</span><div class="segmented" role="group" aria-label="Tie handling"><button type="button" class="selected" data-tie="include">Include all ties</button><button type="button" data-tie="exact">Exact count</button></div></div></div>
+          <div class="rule-divider"></div><div class="rule-section"><label class="field-label" for="allocation-mode">FACULTY ALLOCATION <span class="info" title="How eligible students are distributed">i</span></label><select id="allocation-mode"><option value="equal">Equal group sizes</option><option value="section">Balance by section</option><option value="keep_sections">Keep sections together</option><option value="cgpa">Balance by CGPA</option></select><div class="strategy-hint" id="strategy-hint">Keeps group sizes as even as possible, with a stable faculty ID tie-break.</div></div>
+        </article>
+      </section>
+      <section class="preview-column"><article class="card preview-card"><div class="card-heading preview-heading"><div><div class="number">03</div><h2>Allocation preview</h2><p>A clear view of the groups before you export.</p></div><button class="refresh-button" id="calculate-button" title="Recalculate preview" aria-label="Recalculate preview">↻</button></div>
+          <div class="stats-row"><div><span>STUDENTS</span><b id="student-count">—</b></div><div><span>SHORTLISTED</span><b id="excluded-count">—</b></div><div><span>FACULTY</span><b id="faculty-count">—</b></div></div>
+          <div class="group-list" id="group-list"><div class="empty-state"><div class="empty-illustration"><span>○</span><span>○</span><span>○</span><i>↗</i></div><b>Your preview will appear here</b><p>Upload both files and choose your allocation rules.</p></div></div>
+          <div class="preview-footer"><span><i class="dot-green"></i> <span id="preview-state">Waiting for files</span></span><button class="export-button" id="export-button" disabled>Export CSV <span>↓</span></button></div>
+        </article><article class="card method-card"><span class="method-icon">◎</span><div><b>Built for transparent decisions</b><p>Each assignment and exclusion includes a reason. Allocation is deterministic for the same inputs and settings.</p></div></article></section>
+    </div>
+    <section class="card results-card" id="audit" hidden><div class="results-top"><div><div class="eyebrow">REVIEW</div><h2>Student decisions</h2><p>Review assigned groups or the shortlisted students.</p></div><div class="review-tools"><div class="result-filters"><button class="filter active" data-filter="assigned">Assigned <span id="assigned-total">0</span></button><button class="filter" data-filter="excluded">Shortlisted <span id="excluded-total">0</span></button></div><label class="sort-control" for="sort-mode"><span>Sort by</span><select id="sort-mode"><option value="section">Section</option><option value="cgpa">CGPA</option><option value="faculty">Faculty</option><option value="subject">Subject</option></select></label><button class="sort-direction" id="sort-direction" type="button" aria-label="Change sort direction">A–Z ↑</button></div></div><div class="table-wrap" aria-label="Student review list"><table><thead id="decision-head"><tr><th>STUDENT / USN</th><th>CGPA</th><th>SECTION</th><th>STATUS</th><th>FACULTY</th><th>SUBJECT</th></tr></thead><tbody id="decision-rows"></tbody></table></div></section>
+    <footer>Faculty Match <span>·</span> Allocation decisions stay reviewable.</footer>
+  </main>
+</div><script defer src="app.js"></script>
+</body></html>
